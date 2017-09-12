@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <property name="USER_HOME" value="/data/log-center/ribbon" />
+    <property name="APP_NAME" value="ribbon" />
+    
+    <!-- ch.qos.logback.core.ConsoleAppender 控制台输出 -->
+    <appender name="_CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>[%d{yyyyMMdd HH:mm:ss.SSS}] {%thread} &lt;%-5level> %logger %line [%X{TRACE_ID}]: %msg%n
+            </pattern>
+        </encoder>
+    </appender>
+
+	<!-- ch.qos.logback.core.rolling.RollingFileAppender 文件日志输出 -->
+	<appender name="_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+	 <!--  <encoding>UTF-8</encoding> -->
+	  <File>${USER_HOME}/${APP_NAME}.log</File>
+	  <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+	    <!-- daily rollover -->
+	    <FileNamePattern>${USER_HOME}/${APP_NAME}.%d{yyyy-MM-dd}.log</FileNamePattern>
+	    <!-- keep 30 days' worth of history -->
+	    <maxHistory>30</maxHistory>         
+	  </rollingPolicy>
+	  <encoder>
+	    <Pattern>[%d{yyyyMMdd HH:mm:ss.SSS}] [%thread] %-5level %logger{35} %line [%X{TRACE_ID}] - %msg %n</Pattern>
+	  </encoder>        
+	</appender>
+	
+	<!-- 数据采集日志 -->
+	 <appender name="_COLLECT" class="ch.qos.logback.core.rolling.RollingFileAppender">
+	 	 <filter class="ch.qos.logback.classic.filter.LevelFilter">
+	 	 	 <level>INFO</level> 
+        	 <onMatch>ACCEPT</onMatch>
+        	 <onMismatch>DENY</onMismatch>
+        </filter>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${USER_HOME}/collect/WHFQ-JD-DATA-COLLECT-%d{yyyyMMdd}.log</fileNamePattern>
+            <maxHistory>7</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- 调度采集日志 -->
+    <appender name="_SCHED" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>INFO</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${USER_HOME}/sched/WHFQ-JD-DATA-SCHED-%d{yyyyMMdd}.log</fileNamePattern>
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%msg%n</pattern>
+        </encoder>
+    </appender>
+
+	<logger name="com.jd.app.event.CheckinReceiverListener" additivity="false">
+        <level value="INFO"/>
+        <appender-ref ref="_COLLECT"/>
+    </logger>
+
+	<logger name="com.jd.app.service.sched.impl.SchedServiceImpl" additivity="false">
+        <level value="INFO"/>
+        <appender-ref ref="_SCHED"/>
+    </logger>
+
+    <!-- 日志级别 -->
+    <root>
+        <!-- 定义了ERROR和INFO级别的日志，分别在FILE文件和控制台输出 -->
+        <level value="INFO" />
+        <appender-ref ref="_FILE" />
+        <appender-ref ref="_CONSOLE" />
+    </root>
+    <logger name="org.springframework.scheduling.annotation.ScheduledAnnotationBeanPostProcessor" level="INFO"/>
+</configuration>

@@ -1,0 +1,3 @@
+com\jason\feign\controller\ConsumerController.class
+com\jason\feign\service\ComputeService.class
+com\jason\feign\RibbonApplication.class

@@ -1,0 +1,4 @@
+com\jason\feign\controller\ConsumerController.class
+com\jason\feign\FeignApplication.class
+com\jason\feign\service\ComputeClientHystrix.class
+com\jason\feign\service\ComputeClient.class
